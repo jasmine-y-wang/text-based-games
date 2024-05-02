@@ -1,0 +1,6 @@
+textworld
+gym
+torch
+torchvision
+torchaudio
+numpy

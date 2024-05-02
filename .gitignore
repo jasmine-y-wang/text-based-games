@@ -1,0 +1,6 @@
+*.json
+*.ni
+*.ulx
+*.z8
+games/
+__pycache__/
