@@ -4,3 +4,6 @@
 *.z8
 games/
 __pycache__/
+.vector_cache/
+data/
+checkpoints/

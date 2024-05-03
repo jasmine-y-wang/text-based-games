@@ -14,13 +14,23 @@ import torch.nn as nn
 from torch import optim
 import torch.nn.functional as F
 
+from torchtext.vocab import GloVe
+
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
+from gensim.scripts.glove2word2vec import glove2word2vec
+from gensim.models.keyedvectors import KeyedVectors
+
 class CommandScorer(nn.Module):
-    def __init__(self, input_size, hidden_size):
+    def __init__(self, input_size, hidden_size=50, pretrained_embeddings=False):
         super(CommandScorer, self).__init__()
         torch.manual_seed(42)  # For reproducibility
-        self.embedding    = nn.Embedding(input_size, hidden_size)
+        # global_vectors = GloVe(name='6B', dim=hidden_size)
+        glove_weights = torch.load(f".vector_cache/glove.6B.{hidden_size}d.txt.pt")
+        if pretrained_embeddings:
+            self.embedding = nn.Embedding.from_pretrained(glove_weights[2], freeze=False)
+        else:
+            self.embedding = nn.Embedding(input_size, hidden_size)
         self.encoder_gru  = nn.GRU(hidden_size, hidden_size)
         self.cmd_encoder_gru  = nn.GRU(hidden_size, hidden_size)
         self.state_gru    = nn.GRU(hidden_size, hidden_size)
@@ -71,13 +81,12 @@ class NeuralAgent(textworld.core.Agent):
     LOG_FREQUENCY = 1000
     GAMMA = 0.9
 
-    def __init__(self):
+    def __init__(self, pretrained_embeddings=False):
         self._initialized = False
         self._epsiode_has_started = False
         self.id2word = ["<PAD>", "<UNK>"]
         self.word2id = {w: i for i, w in enumerate(self.id2word)}
-
-        self.model = CommandScorer(input_size=self.MAX_VOCAB_SIZE, hidden_size=128)
+        self.model = CommandScorer(input_size=self.MAX_VOCAB_SIZE, hidden_size=100, pretrained_embeddings=pretrained_embeddings)
         self.optimizer = optim.Adam(self.model.parameters(), 0.00003)
         self.mode = "test"
 
@@ -98,14 +107,21 @@ class NeuralAgent(textworld.core.Agent):
         self.mode = "test"
         self.model.reset_hidden(1)
 
+    def create_embedding_matrix(self, glove_model, embedding_dim):
+        embedding_matrix = np.zeros((len(self.id2word), embedding_dim))
+        for i, word in enumerate(self.id2word):
+            try:
+                embedding_matrix[i] = glove_model[word]
+            except KeyError:
+                embedding_matrix[i] = np.random.normal(scale=0.6, size=(embedding_dim, ))
+        return embedding_matrix
+
     def _get_word_id(self, word):
         if word not in self.word2id:
-            if len(self.word2id) >= self.MAX_VOCAB_SIZE:
-                return self.word2id["<UNK>"]
-
-            self.id2word.append(word)
-            self.word2id[word] = len(self.word2id)
-
+            if len(self.word2id) < self.MAX_VOCAB_SIZE:
+                self.id2word.append(word)
+                self.word2id[word] = len(self.word2id) - 1
+            return self.word2id["<UNK>"]
         return self.word2id[word]
 
     def _tokenize(self, text):
