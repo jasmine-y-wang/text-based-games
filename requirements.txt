@@ -4,6 +4,8 @@ torch
 torchvision
 torchaudio
 numpy
-gensim
 scipy==1.12
 torchtext
+scikit-learn
+matplotlib
+scipy

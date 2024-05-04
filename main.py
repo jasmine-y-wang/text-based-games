@@ -1,5 +1,7 @@
-from neural_agent import NeuralAgent
+from neural_agent import NeuralAgent, CommandScorer
 from random_agent import RandomAgent
+from lstm_neural_agent import NeuralAgentLSTM, CommandScorerLSTM
+from transformers_neural_agent import TransformerNeuralAgent, TransformerScorer
 import os
 from glob import glob
 from typing import Mapping, Any
@@ -7,6 +9,8 @@ import numpy as np
 import textworld.gym
 import torch
 from time import time
+from sklearn.manifold import TSNE
+import matplotlib.pyplot as plt
 
 
 def play(agent, path, max_step=100, num_episodes=10, verbose=True):
@@ -39,6 +43,10 @@ def play(agent, path, max_step=100, num_episodes=10, verbose=True):
         num_moves = 0
         while not done:
             command = agent.act(obs, score, done, infos)
+            # print("observation:", obs)
+            # print("command:", command)
+            # print("score:", score)
+            # input()
             obs, score, done, infos = env.step(command)
             num_moves += 1
 
@@ -59,53 +67,86 @@ def play(agent, path, max_step=100, num_episodes=10, verbose=True):
             msg = "  \tavg. steps: {:5.1f}; avg. score: {:4.1f} / {}."
             print(msg.format(np.mean(avg_moves), np.mean(avg_scores), infos["max_score"]))
 
-def testing(checkpoint_name):
-    checkpoint_name = 'checkpoints/neural_agent_trained_on_single_game_500.pt'
-    print("*** TESTING", checkpoint_name, "***")
-    agent = torch.load(checkpoint_name)
-    agent.test()
-    play(agent, "./games/tw-rewardsDense_goalDetailed.z8")  # Dense rewards game
-    play(agent, "./games/tw-another_game.z8")
-
-    agent = RandomAgent()
-    print("*** TESTING RANDOM ***")
-    play(agent, "./games/tw-rewardsDense_goalDetailed.z8")  # Dense rewards game
-    play(agent, "./games/tw-another_game.z8")
-
-    # checkpoint_name = 'checkpoints/neural_agent_trained_on_single_game_pretrained_embeddings.pt'
-    # print("testing", checkpoint_name)
-    # agent = torch.load('checkpoints/neural_agent_trained_on_single_game_pretrained_embeddings.pt')
-    # agent.test()
-    # play(agent, "./games/tw-rewardsDense_goalDetailed.z8")  # Dense rewards game
-
-def train_multiple_games(agent=None, num_episodes_per_game=500, verbose=True):
-    if not agent:
-        agent = RandomAgent()
+def train_multiple_games(agent, checkpoint_name, rewards="dense", num_episodes_per_game=5, verbose=True):
 
     print("Training on 100 games")
     agent.train()  # Tell the agent it should update its parameters.
     starttime = time()
-    play(agent, "./training_games/", num_episodes=100 * num_episodes_per_game, verbose=False)
+    play(agent, "./training_games/", num_episodes=100 * num_episodes_per_game, verbose=verbose)
     print("Trained in {:.2f} secs".format(time() - starttime))
 
     # Save the trained agent.
     import os
     os.makedirs('checkpoints', exist_ok=True)
-    torch.save(agent, 'checkpoints/agent_trained_on_multiple_games.pt')
+    torch.save(agent, f'checkpoints/{checkpoint_name}_{rewards}.pt')
 
 def train_single_game(agent, checkpoint_name, num_episodes=500, verbose=True):
     print("*" * 25)
     print("Training on single game")
     agent.train()  # Tell the agent it should update its parameters.
     starttime = time()
-    play(agent, "./games/tw-rewardsDense_goalDetailed.z8", num_episodes=num_episodes, verbose=True)  # Dense rewards game.
+    play(agent, "./games/tw-rewardsDense_goalDetailed.z8", num_episodes=num_episodes, verbose=verbose)  # Dense rewards game.
     print("Trained in {:.2f} secs".format(time() - starttime))
-    print("*" * 25)
+    print("*" * 50)
 
     # Save the trained agent.
     os.makedirs('checkpoints', exist_ok=True)
-    torch.save(agent, 'checkpoints/' + checkpoint_name + '.pt')
+    torch.save(agent, f'checkpoints/{checkpoint_name}.pt')
 
+def test_multiple_games(checkpoint_name=None):
+    if not checkpoint_name:
+        agent = RandomAgent()
+    else:
+        agent = torch.load(f'checkpoints/{checkpoint_name}.pt')
+    agent.test()
+    play(agent, "./testing_games/", nb_episodes=20 * 10)
+
+def test_single_agent(checkpoint_name=None):
+    if not checkpoint_name:
+        agent = RandomAgent()
+    agent = torch.load(f'checkpoints/{checkpoint_name}.pt')
+    agent.test()
+    play(agent, "./games/tw-rewardsDense_goalDetailed.z8")  # Dense rewards game (training game for single)
+    play(agent, "./games/tw-rewardsBalanced_goalDetailed.z8")
+    play(agent, "./games/tw-rewardsSparse_goalDetailed.z8")
+    play(agent, "./games/tw-rewardsDense_goalBrief.z8")  # Dense rewards game (training game for single)
+    play(agent, "./games/tw-rewardsBalanced_goalBrief.z8")
+    play(agent, "./games/tw-rewardsSparse_goalBrief.z8")
+
+def list_files(directory):
+    filenames = os.listdir(directory)
+    files_only = [f for f in filenames if os.path.isfile(os.path.join(directory, f))]
+    return files_only
+
+def test_random():
+    agent = RandomAgent()
+    print("*** TESTING RANDOM ***")
+    play(agent, "./games/tw-rewardsDense_goalDetailed.z8")  # Dense rewards game
+    play(agent, "./games/tw-another_game.z8")
+    print("*" * 50)
+    print()
+
+def test_all_checkpoints():
+    test_random()
+    directory_path = './checkpoints'
+    files = list_files(directory_path)
+
+    for file in files:
+        checkpoint_name = f"checkpoints/{file}"
+        print("*** TESTING", file, "***")
+        agent = torch.load(checkpoint_name)
+        agent.test()
+        play(agent, "./games/tw-rewardsDense_goalDetailed.z8")  # Dense rewards game (training game for single)
+        play(agent, "./games/tw-rewardsBalanced_goalDetailed.z8")
+        play(agent, "./games/tw-rewardsSparse_goalDetailed.z8")
+        play(agent, "./games/tw-rewardsDense_goalBrief.z8")  # Dense rewards game (training game for single)
+        play(agent, "./games/tw-rewardsBalanced_goalBrief.z8")
+        play(agent, "./games/tw-rewardsSparse_goalBrief.z8")
+
+        # play(agent, "./games/tw-another_game.z8") # Guaranteed to be different from the one above
+        # play(agent, "./testing_games/", num_episodes=20 * 10)  # Averaged over 10 playthroughs for each test game
+        print("*" * 50)
+        print()
 
 if __name__ == "__main__":
     # agent = RandomAgent()
@@ -114,9 +155,20 @@ if __name__ == "__main__":
     # play(agent, "./games/tw-rewardsDense_goalDetailed.z8")    # Dense rewards
     # play(agent, "./games/tw-rewardsBalanced_goalDetailed.z8") # Balanced rewards
     # play(agent, "./games/tw-rewardsSparse_goalDetailed.z8")   # Sparse rewards  
-    
+    # agent = NeuralAgentLSTM()
+    # train_multiple_games(agent,"neural_agent_lstm_trained_on_multiple_games_2",  num_episodes_per_game=2)
+
+    # agent = NeuralAgent(pretrained_embeddings=False)
+    # train_multiple_games(agent,"neural_agent_trained_on_multiple_games_2",  num_episodes_per_game=2)
+    # train_single_game()
+
+    # agent = TransformerNeuralAgent()
+    # train_single_game(agent, "transformer_neural_agent_single", 50)
+
+    # test_single_agent("neural_agent_trained_on_multiple_games_2")
+
+    # test_random()
+    # test_all_checkpoints()
+
     agent = NeuralAgent()
-    train_single_game(agent)
-    train_multiple_games(agent)
-    train_single_game()
-    # testing()
+    train_multiple_games(agent, "a2c_dense_multiple_5")

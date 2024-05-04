@@ -14,27 +14,20 @@ import torch.nn as nn
 from torch import optim
 import torch.nn.functional as F
 
-from torchtext.vocab import GloVe
-
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-class CommandScorer(nn.Module):
-    def __init__(self, input_size, hidden_size=50, pretrained_embeddings=False):
-        super(CommandScorer, self).__init__()
+class CommandScorerLSTM(nn.Module):
+    def __init__(self, input_size, hidden_size):
+        super(CommandScorerLSTM, self).__init__()
         torch.manual_seed(42)  # For reproducibility
-        # global_vectors = GloVe(name='6B', dim=hidden_size)
-        if pretrained_embeddings:
-            glove_weights = torch.load(f".vector_cache/glove.6B.{hidden_size}d.txt.pt")
-            self.embedding = nn.Embedding.from_pretrained(glove_weights[2], freeze=False)
-        else:
-            self.embedding = nn.Embedding(input_size, hidden_size)
-        self.encoder_gru  = nn.GRU(hidden_size, hidden_size)
-        self.cmd_encoder_gru  = nn.GRU(hidden_size, hidden_size)
-        self.state_gru    = nn.GRU(hidden_size, hidden_size)
-        self.hidden_size  = hidden_size
-        self.state_hidden = torch.zeros(1, 1, hidden_size, device=device)
-        self.critic       = nn.Linear(hidden_size, 1)
-        self.att_cmd      = nn.Linear(hidden_size * 2, 1)
+        self.embedding = nn.Embedding(input_size, hidden_size)
+        self.encoder_lstm = nn.LSTM(hidden_size, hidden_size)  # LSTM for the encoder
+        self.cmd_encoder_lstm = nn.LSTM(hidden_size, hidden_size)  # LSTM for command encoding
+        self.state_lstm = nn.LSTM(hidden_size, hidden_size)  # LSTM for state updates
+        self.hidden_size = hidden_size
+        self.state_hidden = (torch.zeros(1, 1, hidden_size), torch.zeros(1, 1, hidden_size))
+        self.critic = nn.Linear(hidden_size, 1)
+        self.att_cmd = nn.Linear(hidden_size * 2, 1)
 
     def forward(self, obs, commands, **kwargs):
         input_length = obs.size(0)
@@ -42,60 +35,57 @@ class CommandScorer(nn.Module):
         nb_cmds = commands.size(1)
 
         embedded = self.embedding(obs)
-        encoder_output, encoder_hidden = self.encoder_gru(embedded)
-        state_output, state_hidden = self.state_gru(encoder_hidden, self.state_hidden)
-        self.state_hidden = state_hidden
-        value = self.critic(state_output)
+        encoder_output, (encoder_hidden, encoder_cell) = self.encoder_lstm(embedded)
+        state_output, (state_hidden, state_cell) = self.state_lstm(encoder_hidden, self.state_hidden)
+        self.state_hidden = (state_hidden, state_cell)
+        value = self.critic(state_output.squeeze(0))
 
         # Attention network over the commands.
-        cmds_embedding = self.embedding.forward(commands)
-        _, cmds_encoding_last_states = self.cmd_encoder_gru.forward(cmds_embedding)  # 1 x cmds x hidden
+        cmds_embedding = self.embedding(commands)
+        _, (cmds_encoding_last_states, _) = self.cmd_encoder_lstm(cmds_embedding)  # 1 x cmds x hidden
 
-        # Same observed state for all commands.
+        # Expand state representation for each command
         cmd_selector_input = torch.stack([state_hidden] * nb_cmds, 2)  # 1 x batch x cmds x hidden
 
-        # Same command choices for the whole batch.
+        # Expand command encoding for the entire batch
         cmds_encoding_last_states = torch.stack([cmds_encoding_last_states] * batch_size, 1)  # 1 x batch x cmds x hidden
 
-        # Concatenate the observed state and command encodings.
+        # Concatenate the observed state and command encodings
         cmd_selector_input = torch.cat([cmd_selector_input, cmds_encoding_last_states], dim=-1)
 
-        # Compute one score per command.
+        # Compute one score per command
         scores = F.relu(self.att_cmd(cmd_selector_input)).squeeze(-1)  # 1 x Batch x cmds
 
         probs = F.softmax(scores, dim=2)  # 1 x Batch x cmds
-        index = probs[0].multinomial(num_samples=1).unsqueeze(0) # 1 x batch x indx
-        return scores, index, value
+        index = probs[0].multinomial(num_samples=1).unsqueeze(0)  # 1 x batch x index
+        optimal_index = torch.argmax(probs, dim=2).unsqueeze(0)
+        is_optimal = (index == optimal_index).item()
+        return scores, index, value, is_optimal
 
     def reset_hidden(self, batch_size):
-        self.state_hidden = torch.zeros(1, batch_size, self.hidden_size, device=device)
+        self.state_hidden = (torch.zeros(1, batch_size, self.hidden_size),
+                             torch.zeros(1, batch_size, self.hidden_size))
 
-
-class NeuralAgent(textworld.core.Agent):
-
+class NeuralAgentLSTM:
     """ Simple Neural Agent for playing TextWorld games. """
     MAX_VOCAB_SIZE = 1000
     UPDATE_FREQUENCY = 10
     LOG_FREQUENCY = 1000
     GAMMA = 0.9
 
-    def __init__(self, pretrained_embeddings=False):
+    def __init__(self) -> None:
         self._initialized = False
         self._epsiode_has_started = False
         self.id2word = ["<PAD>", "<UNK>"]
         self.word2id = {w: i for i, w in enumerate(self.id2word)}
-        self.model = CommandScorer(input_size=self.MAX_VOCAB_SIZE, hidden_size=100, pretrained_embeddings=pretrained_embeddings)
+
+        self.model = CommandScorerLSTM(input_size=self.MAX_VOCAB_SIZE, hidden_size=128)
         self.optimizer = optim.Adam(self.model.parameters(), 0.00003)
+
         self.mode = "test"
-
-    @property
-    def embedding(self) -> nn.Embedding:
-        return self.model.embedding
-
-    @property
-    def infos_to_request(self) -> EnvInfos:
-        return EnvInfos(description=True, inventory=True, admissible_commands=True,
-                        won=True, lost=True)
+        self.optimal_action_count = 0
+        self.total_action_count = 0
+        self.optimal_actions_log = {}
 
     def train(self):
         self.mode = "train"
@@ -109,12 +99,22 @@ class NeuralAgent(textworld.core.Agent):
         self.mode = "test"
         self.model.reset_hidden(1)
 
+    @property
+    def infos_to_request(self) -> EnvInfos:
+        return EnvInfos(description=True, inventory=True, admissible_commands=True,
+                        won=True, lost=True)
+    
+    @property
+    def embedding(self) -> nn.Embedding:
+        return self.model.embedding
+
     def _get_word_id(self, word):
         if word not in self.word2id:
-            if len(self.word2id) < self.MAX_VOCAB_SIZE:
-                self.id2word.append(word)
-                self.word2id[word] = len(self.word2id) - 1
-            return self.word2id["<UNK>"]
+            if len(self.word2id) >= self.MAX_VOCAB_SIZE:
+                return self.word2id["<UNK>"]
+
+            self.id2word.append(word)
+            self.word2id[word] = len(self.word2id)
         return self.word2id[word]
 
     def _tokenize(self, text):
@@ -157,8 +157,15 @@ class NeuralAgent(textworld.core.Agent):
         commands_tensor = self._process(infos["admissible_commands"])
 
         # Get our next action and value prediction.
-        outputs, indexes, values = self.model(input_tensor, commands_tensor)
+        outputs, indexes, values, bestAction = self.model(input_tensor, commands_tensor)
         action = infos["admissible_commands"][indexes[0]]
+
+        # Increment total actions
+        self.total_action_count += 1
+        
+        # Determine if selected action was optimal
+        if bestAction:
+            self.optimal_action_count += 1
 
         if self.mode == "test":
             if done:
@@ -208,6 +215,8 @@ class NeuralAgent(textworld.core.Agent):
                 msg += "  vocab: {:3d}".format(len(self.id2word))
                 print(msg)
                 self.stats = {"max": defaultdict(list), "mean": defaultdict(list)}
+                self.optimal_actions_log[self.no_train_step] = self.optimal_action_count / self.total_action_count
+                print(self.optimal_action_count, self.total_action_count)
 
             loss.backward()
             nn.utils.clip_grad_norm_(self.model.parameters(), 40)
@@ -224,3 +233,13 @@ class NeuralAgent(textworld.core.Agent):
             self.last_score = 0  # Will be starting a new episode. Reset the last score.
 
         return action
+
+    def calculate_optimal_action_percentage(self):
+        if self.total_action_count == 0:
+            return 0
+        return (self.optimal_action_count / self.total_action_count) * 100
+
+    def reset_statistics(self):
+        self.optimal_action_count = 0
+        self.total_action_count = 0
+        self.optimal_actions_log.clear()

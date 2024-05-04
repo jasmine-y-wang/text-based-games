@@ -1,101 +1,83 @@
-import re
-from typing import List, Mapping, Any, Optional
-from collections import defaultdict
-
 import numpy as np
-
-import textworld
-import textworld.gym
-import textworld.core
-from textworld.core import EnvInfos
-
+from copy import deepcopy
 import torch
-import torch.nn as nn
 from torch import optim
 import torch.nn.functional as F
-
-from torchtext.vocab import GloVe
+import torch.nn as nn
+from torch.utils.data import DataLoader, Dataset
+from typing import Mapping, Any, Optional
+import re
+import random
+from textworld.core import EnvInfos
+from collections import defaultdict
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-class CommandScorer(nn.Module):
-    def __init__(self, input_size, hidden_size=50, pretrained_embeddings=False):
-        super(CommandScorer, self).__init__()
+class TransformerScorer(nn.Module):
+    def __init__(self, input_size, hidden_size, nhead):
+        super(TransformerScorer, self).__init__()
         torch.manual_seed(42)  # For reproducibility
-        # global_vectors = GloVe(name='6B', dim=hidden_size)
-        if pretrained_embeddings:
-            glove_weights = torch.load(f".vector_cache/glove.6B.{hidden_size}d.txt.pt")
-            self.embedding = nn.Embedding.from_pretrained(glove_weights[2], freeze=False)
-        else:
-            self.embedding = nn.Embedding(input_size, hidden_size)
-        self.encoder_gru  = nn.GRU(hidden_size, hidden_size)
-        self.cmd_encoder_gru  = nn.GRU(hidden_size, hidden_size)
-        self.state_gru    = nn.GRU(hidden_size, hidden_size)
-        self.hidden_size  = hidden_size
-        self.state_hidden = torch.zeros(1, 1, hidden_size, device=device)
-        self.critic       = nn.Linear(hidden_size, 1)
-        self.att_cmd      = nn.Linear(hidden_size * 2, 1)
+        self.embedding = nn.Embedding(input_size, hidden_size)
+        self.encoder_transformer = nn.TransformerEncoder(nn.TransformerEncoderLayer(hidden_size, nhead), num_layers=1)
+        self.state_transformer = nn.TransformerEncoder(nn.TransformerEncoderLayer(hidden_size, nhead), num_layers=1)
+        self.hidden_size = hidden_size
+        self.state_hidden = None  # We will initialize this in reset_hidden method
+        self.critic = nn.Linear(hidden_size, 1)
+        self.att_cmd = nn.Linear(hidden_size * 2, 1)
 
     def forward(self, obs, commands, **kwargs):
-        input_length = obs.size(0)
         batch_size = obs.size(1)
         nb_cmds = commands.size(1)
 
         embedded = self.embedding(obs)
-        encoder_output, encoder_hidden = self.encoder_gru(embedded)
-        state_output, state_hidden = self.state_gru(encoder_hidden, self.state_hidden)
-        self.state_hidden = state_hidden
-        value = self.critic(state_output)
+        encoder_output = self.encoder_transformer(embedded)
+        state_output = self.state_transformer(encoder_output)
+        self.state_hidden = state_output[-1:]
+        value = self.critic(state_output[-1])
 
         # Attention network over the commands.
-        cmds_embedding = self.embedding.forward(commands)
-        _, cmds_encoding_last_states = self.cmd_encoder_gru.forward(cmds_embedding)  # 1 x cmds x hidden
+        cmds_embedding = self.embedding(commands)
+        cmds_encoding = self.encoder_transformer(cmds_embedding)
 
         # Same observed state for all commands.
-        cmd_selector_input = torch.stack([state_hidden] * nb_cmds, 2)  # 1 x batch x cmds x hidden
+        cmd_selector_input = torch.stack([self.state_hidden.squeeze(0)] * nb_cmds, 1)  # Batch x cmds x hidden
 
         # Same command choices for the whole batch.
-        cmds_encoding_last_states = torch.stack([cmds_encoding_last_states] * batch_size, 1)  # 1 x batch x cmds x hidden
+        cmds_encoding = torch.stack([cmds_encoding[-1]] * batch_size, 0)  # Batch x cmds x hidden
 
         # Concatenate the observed state and command encodings.
-        cmd_selector_input = torch.cat([cmd_selector_input, cmds_encoding_last_states], dim=-1)
+        cmd_selector_input = torch.cat([cmd_selector_input, cmds_encoding], dim=-1)
 
         # Compute one score per command.
-        scores = F.relu(self.att_cmd(cmd_selector_input)).squeeze(-1)  # 1 x Batch x cmds
+        scores = F.relu(self.att_cmd(cmd_selector_input)).squeeze(-1)  # Batch x cmds
+        #scores = scores.unsqueeze(0)  # Add a singleton dimension if necessary for batch processing
+        
+        probs = F.softmax(scores, dim=1)
+        index = probs.multinomial(num_samples=1)  # Batch x 1
 
-        probs = F.softmax(scores, dim=2)  # 1 x Batch x cmds
-        index = probs[0].multinomial(num_samples=1).unsqueeze(0) # 1 x batch x indx
         return scores, index, value
 
     def reset_hidden(self, batch_size):
         self.state_hidden = torch.zeros(1, batch_size, self.hidden_size, device=device)
 
 
-class NeuralAgent(textworld.core.Agent):
-
+class TransformerNeuralAgent:
     """ Simple Neural Agent for playing TextWorld games. """
     MAX_VOCAB_SIZE = 1000
     UPDATE_FREQUENCY = 10
     LOG_FREQUENCY = 1000
     GAMMA = 0.9
 
-    def __init__(self, pretrained_embeddings=False):
+    def __init__(self) -> None:
         self._initialized = False
         self._epsiode_has_started = False
         self.id2word = ["<PAD>", "<UNK>"]
         self.word2id = {w: i for i, w in enumerate(self.id2word)}
-        self.model = CommandScorer(input_size=self.MAX_VOCAB_SIZE, hidden_size=100, pretrained_embeddings=pretrained_embeddings)
+
+        self.model = TransformerScorer(input_size=self.MAX_VOCAB_SIZE, hidden_size=128, nhead=8)
         self.optimizer = optim.Adam(self.model.parameters(), 0.00003)
+
         self.mode = "test"
-
-    @property
-    def embedding(self) -> nn.Embedding:
-        return self.model.embedding
-
-    @property
-    def infos_to_request(self) -> EnvInfos:
-        return EnvInfos(description=True, inventory=True, admissible_commands=True,
-                        won=True, lost=True)
 
     def train(self):
         self.mode = "train"
@@ -104,17 +86,26 @@ class NeuralAgent(textworld.core.Agent):
         self.model.reset_hidden(1)
         self.last_score = 0
         self.no_train_step = 0
+        self.wordcounts = {}
 
     def test(self):
         self.mode = "test"
         self.model.reset_hidden(1)
 
+    @property
+    def infos_to_request(self) -> EnvInfos:
+        return EnvInfos(description=True, inventory=True, admissible_commands=True,
+                        won=True, lost=True)
+
     def _get_word_id(self, word):
         if word not in self.word2id:
-            if len(self.word2id) < self.MAX_VOCAB_SIZE:
-                self.id2word.append(word)
-                self.word2id[word] = len(self.word2id) - 1
-            return self.word2id["<UNK>"]
+            if len(self.word2id) >= self.MAX_VOCAB_SIZE:
+                return self.word2id["<UNK>"]
+
+            self.id2word.append(word)
+            self.word2id[word] = len(self.word2id)
+            self.wordcounts[word] = 0
+        self.wordcounts[word] += 1
         return self.word2id[word]
 
     def _tokenize(self, text):
@@ -187,9 +178,9 @@ class NeuralAgent(textworld.core.Agent):
                 reward, indexes_, outputs_, values_ = transition
 
                 advantage        = advantage.detach() # Block gradients flow here.
-                probs            = F.softmax(outputs_, dim=2)
+                probs            = F.softmax(outputs_, dim=1)
                 log_probs        = torch.log(probs)
-                log_action_probs = log_probs.gather(2, indexes_)
+                log_action_probs = log_probs.gather(1, indexes_)
                 policy_loss      = (-log_action_probs * advantage).sum()
                 value_loss       = (.5 * (values_ - ret) ** 2.).sum()
                 entropy     = (-probs * log_probs).sum()

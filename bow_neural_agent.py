@@ -18,62 +18,42 @@ from torchtext.vocab import GloVe
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-class CommandScorer(nn.Module):
+class CommandScorerBOW(nn.Module):
     def __init__(self, input_size, hidden_size=50, pretrained_embeddings=False):
-        super(CommandScorer, self).__init__()
-        torch.manual_seed(42)  # For reproducibility
-        # global_vectors = GloVe(name='6B', dim=hidden_size)
+        super(CommandScorer_BOW, self).__init__()
         if pretrained_embeddings:
             glove_weights = torch.load(f".vector_cache/glove.6B.{hidden_size}d.txt.pt")
             self.embedding = nn.Embedding.from_pretrained(glove_weights[2], freeze=False)
         else:
             self.embedding = nn.Embedding(input_size, hidden_size)
-        self.encoder_gru  = nn.GRU(hidden_size, hidden_size)
-        self.cmd_encoder_gru  = nn.GRU(hidden_size, hidden_size)
-        self.state_gru    = nn.GRU(hidden_size, hidden_size)
+        
         self.hidden_size  = hidden_size
         self.state_hidden = torch.zeros(1, 1, hidden_size, device=device)
-        self.critic       = nn.Linear(hidden_size, 1)
-        self.att_cmd      = nn.Linear(hidden_size * 2, 1)
+        self.critic = nn.Linear(hidden_size, 1)
+        self.att_cmd = nn.Linear(hidden_size * 2, 1)
 
-    def forward(self, obs, commands, **kwargs):
-        input_length = obs.size(0)
-        batch_size = obs.size(1)
-        nb_cmds = commands.size(1)
+    def forward(self, obs, commands):
+        embedded_obs = self.embedding(obs).mean(dim=0)  # Shape: [hidden_size]
+        embedded_cmds = self.embedding(commands).mean(dim=1)  # Shape: [num_commands, hidden_size]
 
-        embedded = self.embedding(obs)
-        encoder_output, encoder_hidden = self.encoder_gru(embedded)
-        state_output, state_hidden = self.state_gru(encoder_hidden, self.state_hidden)
-        self.state_hidden = state_hidden
-        value = self.critic(state_output)
+        value = self.critic(embedded_obs.unsqueeze(0))  # Unsqueeze to add batch dimension
 
-        # Attention network over the commands.
-        cmds_embedding = self.embedding.forward(commands)
-        _, cmds_encoding_last_states = self.cmd_encoder_gru.forward(cmds_embedding)  # 1 x cmds x hidden
+        # Ensure that embedded_obs is correctly shaped and expanded
+        state_expanded = embedded_obs.unsqueeze(0).expand(embedded_cmds.size(0), embedded_obs.size(0))  # Corrected expansion
 
-        # Same observed state for all commands.
-        cmd_selector_input = torch.stack([state_hidden] * nb_cmds, 2)  # 1 x batch x cmds x hidden
+        cmd_selector_input = torch.cat([state_expanded, embedded_cmds], dim=1)  # Concatenate along the last dimension
+        
+        scores = self.att_cmd(cmd_selector_input)
+        scores = scores.squeeze(-1)  # Flatten the scores if necessary
+        probs = F.softmax(scores, dim=0)
+        index = probs.multinomial(num_samples=1).item()
 
-        # Same command choices for the whole batch.
-        cmds_encoding_last_states = torch.stack([cmds_encoding_last_states] * batch_size, 1)  # 1 x batch x cmds x hidden
-
-        # Concatenate the observed state and command encodings.
-        cmd_selector_input = torch.cat([cmd_selector_input, cmds_encoding_last_states], dim=-1)
-
-        # Compute one score per command.
-        scores = F.relu(self.att_cmd(cmd_selector_input)).squeeze(-1)  # 1 x Batch x cmds
-
-        probs = F.softmax(scores, dim=2)  # 1 x Batch x cmds
-        index = probs[0].multinomial(num_samples=1).unsqueeze(0) # 1 x batch x indx
         return scores, index, value
-
+    
     def reset_hidden(self, batch_size):
         self.state_hidden = torch.zeros(1, batch_size, self.hidden_size, device=device)
 
-
-class NeuralAgent(textworld.core.Agent):
-
-    """ Simple Neural Agent for playing TextWorld games. """
+class NeuralAgentBOW(textworld.core.Agent):
     MAX_VOCAB_SIZE = 1000
     UPDATE_FREQUENCY = 10
     LOG_FREQUENCY = 1000
@@ -84,19 +64,15 @@ class NeuralAgent(textworld.core.Agent):
         self._epsiode_has_started = False
         self.id2word = ["<PAD>", "<UNK>"]
         self.word2id = {w: i for i, w in enumerate(self.id2word)}
-        self.model = CommandScorer(input_size=self.MAX_VOCAB_SIZE, hidden_size=100, pretrained_embeddings=pretrained_embeddings)
+        self.model = CommandScorerBOW(input_size=self.MAX_VOCAB_SIZE, hidden_size=100, pretrained_embeddings=pretrained_embeddings)
         self.optimizer = optim.Adam(self.model.parameters(), 0.00003)
         self.mode = "test"
-
-    @property
-    def embedding(self) -> nn.Embedding:
-        return self.model.embedding
 
     @property
     def infos_to_request(self) -> EnvInfos:
         return EnvInfos(description=True, inventory=True, admissible_commands=True,
                         won=True, lost=True)
-
+    
     def train(self):
         self.mode = "train"
         self.stats = {"max": defaultdict(list), "mean": defaultdict(list)}
@@ -134,7 +110,7 @@ class NeuralAgent(textworld.core.Agent):
         padded_tensor = torch.from_numpy(padded).type(torch.long).to(device)
         padded_tensor = padded_tensor.permute(1, 0) # Batch x Seq => Seq x Batch
         return padded_tensor
-
+    
     def _discount_rewards(self, last_values):
         returns, advantages = [], []
         R = last_values.data
@@ -147,12 +123,9 @@ class NeuralAgent(textworld.core.Agent):
 
         return returns[::-1], advantages[::-1]
 
+
     def act(self, obs: str, score: int, done: bool, infos: Mapping[str, Any]) -> Optional[str]:
-
-        # Build agent's observation: feedback + look + inventory.
         input_ = "{}\n{}\n{}".format(obs, infos["description"], infos["inventory"])
-
-        # Tokenize and pad the input and the commands to chose from.
         input_tensor = self._process([input_])
         commands_tensor = self._process(infos["admissible_commands"])
 
