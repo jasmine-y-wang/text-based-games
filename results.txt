@@ -1,72 +1,23 @@
-*** TESTING neural_agent_trained_on_single_game_500.pt ***
-tw-rewardsDense_goalDetailed.z8..........  	avg. steps:  79.3; avg. score:  8.9 / 10.
-tw-rewardsBalanced_goalDetailed.z8..........  	avg. steps:  79.3; avg. score:  2.9 / 4.
-tw-rewardsSparse_goalDetailed.z8..........  	avg. steps:  79.3; avg. score:  0.0 / 1.
-tw-rewardsDense_goalBrief.z8..........  	avg. steps:  79.3; avg. score:  8.9 / 10.
-tw-rewardsBalanced_goalBrief.z8..........  	avg. steps:  79.3; avg. score:  2.9 / 4.
-tw-rewardsSparse_goalBrief.z8..........  	avg. steps:  79.3; avg. score:  0.0 / 1.
+*** TESTING RANDOM ***
+tw-rewardsDense_goalDetailed.z8..........  	avg. steps: 100.0; avg. score:  4.2 / 10.
+tw-another_game.z8..........  	avg. steps: 100.0; avg. score:  4.0 / 8.
 **************************************************
 
-*** TESTING neural_agent_trained_on_single_game_pretrained_embeddings_50.pt ***
-tw-rewardsDense_goalDetailed.z8..........  	avg. steps: 100.0; avg. score:  5.0 / 10.
-tw-rewardsBalanced_goalDetailed.z8..........  	avg. steps: 100.0; avg. score:  1.1 / 4.
-tw-rewardsSparse_goalDetailed.z8..........  	avg. steps: 100.0; avg. score:  0.0 / 1.
-tw-rewardsDense_goalBrief.z8..........  	avg. steps: 100.0; avg. score:  5.0 / 10.
-tw-rewardsBalanced_goalBrief.z8..........  	avg. steps: 100.0; avg. score:  1.1 / 4.
-tw-rewardsSparse_goalBrief.z8..........  	avg. steps: 100.0; avg. score:  0.0 / 1.
+*** TESTING a2c_sparse_multiple_5.pt ***
+./testing_games_dense........................................................................................................................................................................................................  	avg. steps:  99.7; avg. normalized score:  0.5 / 1.
+./testing_games_balanced........................................................................................................................................................................................................  	avg. steps:  99.9; avg. normalized score:  0.2 / 1.
+./testing_games_sparse........................................................................................................................................................................................................  	avg. steps:  99.7; avg. normalized score:  0.0 / 1.
 **************************************************
 
-*** TESTING neural_agent_trained_on_multiple_games_pretrained_embeddings_2.pt ***
-tw-rewardsDense_goalDetailed.z8..........  	avg. steps: 100.0; avg. score:  5.3 / 10.
-tw-rewardsBalanced_goalDetailed.z8..........  	avg. steps: 100.0; avg. score:  1.2 / 4.
-tw-rewardsSparse_goalDetailed.z8..........  	avg. steps: 100.0; avg. score:  0.0 / 1.
-tw-rewardsDense_goalBrief.z8..........  	avg. steps: 100.0; avg. score:  5.3 / 10.
-tw-rewardsBalanced_goalBrief.z8..........  	avg. steps: 100.0; avg. score:  1.2 / 4.
-tw-rewardsSparse_goalBrief.z8..........  	avg. steps: 100.0; avg. score:  0.0 / 1.
+*** TESTING a2c_balanced_multiple_5.pt ***
+./testing_games_dense........................................................................................................................................................................................................  	avg. steps:  99.0; avg. normalized score:  0.6 / 1.
+./testing_games_balanced........................................................................................................................................................................................................  	avg. steps:  99.1; avg. normalized score:  0.3 / 1.
+./testing_games_sparse........................................................................................................................................................................................................  	avg. steps:  98.3; avg. normalized score:  0.0 / 1.
 **************************************************
 
-*** TESTING neural_agent_trained_on_single_game_50.pt ***
-tw-rewardsDense_goalDetailed.z8..........  	avg. steps: 100.0; avg. score:  4.1 / 10.
-tw-rewardsBalanced_goalDetailed.z8..........  	avg. steps: 100.0; avg. score:  0.5 / 4.
-tw-rewardsSparse_goalDetailed.z8..........  	avg. steps: 100.0; avg. score:  0.0 / 1.
-tw-rewardsDense_goalBrief.z8..........  	avg. steps: 100.0; avg. score:  4.1 / 10.
-tw-rewardsBalanced_goalBrief.z8..........  	avg. steps: 100.0; avg. score:  0.5 / 4.
-tw-rewardsSparse_goalBrief.z8..........  	avg. steps: 100.0; avg. score:  0.0 / 1.
-**************************************************
-
-*** TESTING neural_agent_trained_on_multiple_games_2.pt ***
-tw-rewardsDense_goalDetailed.z8..........  	avg. steps: 100.0; avg. score:  4.5 / 10.
-tw-rewardsBalanced_goalDetailed.z8..........  	avg. steps: 100.0; avg. score:  0.8 / 4.
-tw-rewardsSparse_goalDetailed.z8..........  	avg. steps: 100.0; avg. score:  0.0 / 1.
-tw-rewardsDense_goalBrief.z8..........  	avg. steps: 100.0; avg. score:  4.5 / 10.
-tw-rewardsBalanced_goalBrief.z8..........  	avg. steps: 100.0; avg. score:  0.8 / 4.
-tw-rewardsSparse_goalBrief.z8..........  	avg. steps: 100.0; avg. score:  0.0 / 1.
-**************************************************
-
-*** TESTING neural_agent_lstm_trained_on_multiple_games_2.pt ***
-tw-rewardsDense_goalDetailed.z8..........  	avg. steps:  92.1; avg. score:  6.7 / 10.
-tw-rewardsBalanced_goalDetailed.z8..........  	avg. steps:  92.1; avg. score:  1.8 / 4.
-tw-rewardsSparse_goalDetailed.z8..........  	avg. steps:  92.1; avg. score:  0.0 / 1.
-tw-rewardsDense_goalBrief.z8..........  	avg. steps:  92.1; avg. score:  6.7 / 10.
-tw-rewardsBalanced_goalBrief.z8..........  	avg. steps:  92.1; avg. score:  1.8 / 4.
-tw-rewardsSparse_goalBrief.z8..........  	avg. steps:  92.1; avg. score:  0.0 / 1.
-**************************************************
-
-*** TESTING neural_agent_trained_on_single_game_pretrained_embeddings_500.pt ***
-tw-rewardsDense_goalDetailed.z8..........  	avg. steps: 100.0; avg. score:  5.0 / 10.
-tw-rewardsBalanced_goalDetailed.z8..........  	avg. steps: 100.0; avg. score:  1.1 / 4.
-tw-rewardsSparse_goalDetailed.z8..........  	avg. steps: 100.0; avg. score:  0.0 / 1.
-tw-rewardsDense_goalBrief.z8..........  	avg. steps: 100.0; avg. score:  5.0 / 10.
-tw-rewardsBalanced_goalBrief.z8..........  	avg. steps: 100.0; avg. score:  1.1 / 4.
-tw-rewardsSparse_goalBrief.z8..........  	avg. steps: 100.0; avg. score:  0.0 / 1.
-**************************************************
-
-*** TESTING neural_agent_trained_on_multiple_games.pt ***
-tw-rewardsDense_goalDetailed.z8..........  	avg. steps:  87.9; avg. score:  8.7 / 10.
-tw-rewardsBalanced_goalDetailed.z8..........  	avg. steps:  87.9; avg. score:  2.8 / 4.
-tw-rewardsSparse_goalDetailed.z8..........  	avg. steps:  87.9; avg. score:  0.0 / 1.
-tw-rewardsDense_goalBrief.z8..........  	avg. steps:  87.9; avg. score:  8.7 / 10.
-tw-rewardsBalanced_goalBrief.z8..........  	avg. steps:  87.9; avg. score:  2.8 / 4.
-tw-rewardsSparse_goalBrief.z8..........  	avg. steps:  87.9; avg. score:  0.0 / 1.
+*** TESTING a2c_dense_multiple_5.pt ***
+./testing_games_dense........................................................................................................................................................................................................  	avg. steps:  95.1; avg. normalized score:  0.8 / 1.
+./testing_games_balanced........................................................................................................................................................................................................  	avg. steps:  95.5; avg. normalized score:  0.5 / 1.
+./testing_games_sparse........................................................................................................................................................................................................  	avg. steps:  95.6; avg. normalized score:  0.0 / 1.
 **************************************************
 

@@ -18,11 +18,16 @@ from torchtext.vocab import GloVe
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
+"""
+The CommandScorer and Neural Agent classes are originally from the TextWorld repository:
+https://github.com/microsoft/TextWorld
+"""
+
 class CommandScorer(nn.Module):
+    
     def __init__(self, input_size, hidden_size=50, pretrained_embeddings=False):
         super(CommandScorer, self).__init__()
         torch.manual_seed(42)  # For reproducibility
-        # global_vectors = GloVe(name='6B', dim=hidden_size)
         if pretrained_embeddings:
             glove_weights = torch.load(f".vector_cache/glove.6B.{hidden_size}d.txt.pt")
             self.embedding = nn.Embedding.from_pretrained(glove_weights[2], freeze=False)

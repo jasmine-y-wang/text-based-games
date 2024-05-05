@@ -1,0 +1,153 @@
+Training on 100 games
+./training_games_dense.........  1000. reward:  0.052  policy:  0.389  value:  0.105  entropy:  2.386  confidence:  0.094  score:  7  vocab: 482
+..........  2000. reward:  0.049  policy:  0.245  value:  0.098  entropy:  2.375  confidence:  0.096  score:  9  vocab: 554
+..........  3000. reward:  0.044  policy:  0.083  value:  0.061  entropy:  2.401  confidence:  0.093  score:  5  vocab: 585
+..........  4000. reward:  0.041  policy:  0.068  value:  0.069  entropy:  2.380  confidence:  0.095  score:  6  vocab: 601
+..........  5000. reward:  0.043  policy:  0.103  value:  0.093  entropy:  2.397  confidence:  0.095  score:  6  vocab: 628
+..........  6000. reward:  0.043  policy:  0.006  value:  0.073  entropy:  2.339  confidence:  0.099  score:  7  vocab: 635
+..........  7000. reward: -0.048  policy: -1.483  value:  23.995  entropy:  2.453  confidence:  0.089  score:  9  vocab: 671
+..........  8000. reward:  0.049  policy:  0.051  value:  0.096  entropy:  2.350  confidence:  0.098  score:  9  vocab: 674
+..........  9000. reward:  0.048  policy:  0.029  value:  0.072  entropy:  2.390  confidence:  0.095  score:  8  vocab: 677
+.......... 10000. reward:  0.053  policy:  0.019  value:  0.075  entropy:  2.372  confidence:  0.097  score:  9  vocab: 683
+.......... 11000. reward:  0.054  policy:  0.080  value:  0.084  entropy:  2.447  confidence:  0.091  score:  7  vocab: 689
+......... 12000. reward:  0.044  policy: -0.008  value:  0.070  entropy:  2.346  confidence:  0.099  score:  6  vocab: 693
+.......... 13000. reward:  0.052  policy:  0.043  value:  0.080  entropy:  2.370  confidence:  0.098  score:  6  vocab: 694
+.......... 14000. reward:  0.052  policy:  0.033  value:  0.090  entropy:  2.348  confidence:  0.101  score:  7  vocab: 695
+.......... 15000. reward:  0.048  policy: -0.016  value:  0.084  entropy:  2.357  confidence:  0.099  score:  5  vocab: 696
+.......... 16000. reward:  0.056  policy:  0.040  value:  0.102  entropy:  2.449  confidence:  0.093  score:  8  vocab: 704
+.......... 17000. reward:  0.164  policy:  1.957  value:  24.764  entropy:  2.375  confidence:  0.098  score:  7  vocab: 706
+.......... 18000. reward:  0.060  policy: -0.005  value:  0.096  entropy:  2.394  confidence:  0.096  score:  7  vocab: 706
+.......... 19000. reward:  0.056  policy: -0.019  value:  0.092  entropy:  2.458  confidence:  0.092  score:  8  vocab: 707
+.......... 20000. reward:  0.047  policy: -0.056  value:  0.071  entropy:  2.347  confidence:  0.100  score:  7  vocab: 707
+.......... 21000. reward:  0.052  policy:  0.047  value:  0.100  entropy:  2.449  confidence:  0.094  score:  6  vocab: 707
+.......... 22000. reward: -0.059  policy: -0.268  value:  5.560  entropy:  2.421  confidence:  0.095  score:  7  vocab: 711
+.......... 23000. reward:  0.041  policy: -0.094  value:  0.062  entropy:  2.350  confidence:  0.100  score:  6  vocab: 711
+.......... 24000. reward:  0.058  policy:  0.095  value:  0.119  entropy:  2.443  confidence:  0.093  score:  8  vocab: 711
+......... 25000. reward:  0.051  policy: -0.000  value:  0.088  entropy:  2.375  confidence:  0.099  score:  9  vocab: 712
+.......... 26000. reward:  0.054  policy:  0.008  value:  0.090  entropy:  2.405  confidence:  0.095  score:  7  vocab: 712
+.......... 27000. reward:  0.056  policy:  0.005  value:  0.095  entropy:  2.416  confidence:  0.096  score:  6  vocab: 712
+.......... 28000. reward:  0.060  policy:  0.092  value:  0.119  entropy:  2.397  confidence:  0.098  score:  7  vocab: 712
+.......... 29000. reward:  0.051  policy: -0.036  value:  0.081  entropy:  2.338  confidence:  0.102  score:  7  vocab: 712
+.......... 30000. reward:  0.054  policy: -0.006  value:  0.081  entropy:  2.395  confidence:  0.098  score:  7  vocab: 712
+.......... 31000. reward: -0.052  policy: -1.650  value:  23.705  entropy:  2.349  confidence:  0.106  score:  7  vocab: 713
+.......... 32000. reward:  0.052  policy:  0.006  value:  0.104  entropy:  2.429  confidence:  0.093  score:  7  vocab: 715
+.......... 33000. reward: -0.050  policy: -0.623  value:  9.945  entropy:  2.429  confidence:  0.098  score:  8  vocab: 719
+.......... 34000. reward:  0.066  policy:  0.099  value:  0.115  entropy:  2.387  confidence:  0.100  score:  9  vocab: 719
+.......... 35000. reward: -0.054  policy: -1.547  value:  23.666  entropy:  2.435  confidence:  0.096  score:  9  vocab: 722
+.......... 36000. reward:  0.061  policy: -0.002  value:  0.102  entropy:  2.416  confidence:  0.101  score:  8  vocab: 722
+.......... 37000. reward:  0.060  policy:  0.038  value:  0.116  entropy:  2.421  confidence:  0.101  score:  6  vocab: 722
+.......... 38000. reward:  0.051  policy: -0.125  value:  0.079  entropy:  2.342  confidence:  0.105  score:  7  vocab: 722
+.......... 39000. reward: -0.048  policy: -1.061  value:  19.183  entropy:  2.406  confidence:  0.099  score:  7  vocab: 723
+.......... 40000. reward: -0.057  policy: -1.497  value:  20.562  entropy:  2.394  confidence:  0.099  score:  7  vocab: 724
+........... 41000. reward: -0.264  policy: -4.855  value:  68.257  entropy:  2.436  confidence:  0.098  score:  9  vocab: 727
+.......... 42000. reward:  0.074  policy:  0.138  value:  0.149  entropy:  2.396  confidence:  0.103  score:  9  vocab: 728
+.......... 43000. reward:  0.070  policy:  0.076  value:  0.156  entropy:  2.490  confidence:  0.099  score:  9  vocab: 728
+........... 44000. reward: -0.254  policy: -3.950  value:  62.016  entropy:  2.453  confidence:  0.098  score:  9  vocab: 730
+.......... 45000. reward:  0.066  policy:  0.001  value:  0.140  entropy:  2.357  confidence:  0.109  score:  9  vocab: 730
+.......... 46000. reward:  0.063  policy: -0.716  value:  41.050  entropy:  2.322  confidence:  0.114  score:  9  vocab: 733
+.......... 47000. reward:  0.062  policy:  0.014  value:  0.124  entropy:  2.383  confidence:  0.108  score:  8  vocab: 733
+.......... 48000. reward: -0.139  policy: -2.842  value:  45.039  entropy:  2.414  confidence:  0.112  score:  9  vocab: 735
+........... 49000. reward: -0.038  policy: -1.557  value:  23.836  entropy:  2.388  confidence:  0.113  score:  9  vocab: 736
+..........  	avg. steps:  99.0; avg. normalized score:  0.6 / 1.
+./training_games_balanced 50000. reward:  0.058  policy: -0.164  value:  0.148  entropy:  2.328  confidence:  0.120  score:  6  vocab: 736
+........... 51000. reward: -0.423  policy: -4.545  value:  68.392  entropy:  2.348  confidence:  0.114  score:  3  vocab: 744
+.......... 52000. reward: -0.097  policy: -0.950  value:  13.618  entropy:  2.314  confidence:  0.116  score:  3  vocab: 745
+.......... 53000. reward: -0.091  policy: -0.819  value:  13.740  entropy:  2.390  confidence:  0.112  score:  3  vocab: 747
+.......... 54000. reward: -0.097  policy: -0.618  value:  10.062  entropy:  2.333  confidence:  0.113  score:  3  vocab: 748
+........... 55000. reward: -0.417  policy: -5.919  value:  88.691  entropy:  2.334  confidence:  0.115  score:  3  vocab: 750
+.......... 56000. reward: -0.089  policy: -1.397  value:  22.067  entropy:  2.324  confidence:  0.116  score:  3  vocab: 751
+............ 57000. reward: -0.193  policy: -1.410  value:  76.002  entropy:  2.396  confidence:  0.110  score:  3  vocab: 754
+.......... 58000. reward:  0.018  policy: -0.071  value:  0.022  entropy:  2.402  confidence:  0.112  score:  3  vocab: 754
+......... 59000. reward: -0.089  policy: -1.474  value:  22.265  entropy:  2.414  confidence:  0.108  score:  3  vocab: 754
+........... 60000. reward:  0.129  policy:  1.426  value:  21.548  entropy:  2.346  confidence:  0.111  score:  4  vocab: 755
+.......... 61000. reward:  0.018  policy: -0.025  value:  0.028  entropy:  2.418  confidence:  0.105  score:  3  vocab: 755
+.......... 62000. reward: -0.094  policy: -1.245  value:  20.759  entropy:  2.384  confidence:  0.107  score:  3  vocab: 756
+.......... 63000. reward:  0.022  policy:  0.079  value:  0.036  entropy:  2.352  confidence:  0.113  score:  3  vocab: 756
+.......... 64000. reward:  0.020  policy:  0.029  value:  0.030  entropy:  2.385  confidence:  0.110  score:  3  vocab: 756
+.......... 65000. reward: -0.090  policy: -1.271  value:  20.810  entropy:  2.382  confidence:  0.107  score:  3  vocab: 757
+.......... 66000. reward:  0.021  policy:  0.060  value:  0.038  entropy:  2.393  confidence:  0.109  score:  3  vocab: 757
+.......... 67000. reward:  0.016  policy: -0.046  value:  0.020  entropy:  2.383  confidence:  0.105  score:  3  vocab: 757
+........... 68000. reward: -0.314  policy: -2.899  value:  49.006  entropy:  2.381  confidence:  0.103  score:  3  vocab: 759
+........... 69000. reward: -0.302  policy: -1.822  value:  37.223  entropy:  2.399  confidence:  0.111  score:  3  vocab: 762
+.......... 70000. reward:  0.012  policy: -0.018  value:  0.016  entropy:  2.371  confidence:  0.108  score:  3  vocab: 762
+........... 71000. reward: -0.202  policy: -2.655  value:  47.088  entropy:  2.396  confidence:  0.107  score:  3  vocab: 763
+.......... 72000. reward: -0.198  policy: -3.412  value:  46.249  entropy:  2.440  confidence:  0.102  score:  3  vocab: 765
+.......... 73000. reward: -0.204  policy: -2.586  value:  37.133  entropy:  2.412  confidence:  0.107  score:  3  vocab: 765
+.......... 74000. reward:  0.017  policy:  0.034  value:  0.021  entropy:  2.431  confidence:  0.100  score:  2  vocab: 765
+.......... 75000. reward:  0.014  policy: -0.009  value:  0.021  entropy:  2.375  confidence:  0.105  score:  2  vocab: 765
+.......... 76000. reward:  0.022  policy:  0.066  value:  0.035  entropy:  2.481  confidence:  0.096  score:  3  vocab: 765
+.......... 77000. reward:  0.248  policy:  2.615  value:  33.429  entropy:  2.535  confidence:  0.094  score:  4  vocab: 766
+.......... 78000. reward:  0.019  policy: -0.030  value:  0.032  entropy:  2.470  confidence:  0.096  score:  3  vocab: 766
+.......... 79000. reward:  0.017  policy: -0.025  value:  0.037  entropy:  2.373  confidence:  0.103  score:  3  vocab: 766
+.......... 80000. reward: -0.087  policy: -1.285  value:  19.051  entropy:  2.410  confidence:  0.101  score:  3  vocab: 766
+.......... 81000. reward:  0.018  policy:  0.006  value:  0.026  entropy:  2.398  confidence:  0.104  score:  3  vocab: 766
+........... 82000. reward: -0.198  policy: -1.526  value:  26.616  entropy:  2.464  confidence:  0.104  score:  3  vocab: 767
+........... 83000. reward: -0.200  policy: -1.533  value:  26.388  entropy:  2.432  confidence:  0.104  score:  3  vocab: 769
+.......... 84000. reward: -0.091  policy: -1.672  value:  24.737  entropy:  2.442  confidence:  0.105  score:  3  vocab: 769
+.......... 85000. reward: -0.206  policy: -2.313  value:  35.556  entropy:  2.392  confidence:  0.104  score:  3  vocab: 769
+........... 86000. reward: -0.198  policy: -1.200  value:  21.929  entropy:  2.376  confidence:  0.111  score:  3  vocab: 769
+........... 87000. reward: -0.201  policy: -2.017  value:  36.130  entropy:  2.380  confidence:  0.106  score:  3  vocab: 769
+.......... 88000. reward: -0.097  policy: -0.746  value:  13.577  entropy:  2.351  confidence:  0.106  score:  3  vocab: 769
+........... 89000. reward: -0.200  policy: -1.835  value:  29.048  entropy:  2.385  confidence:  0.108  score:  3  vocab: 770
+.......... 90000. reward: -0.090  policy: -0.872  value:  16.560  entropy:  2.415  confidence:  0.106  score:  3  vocab: 771
+.......... 91000. reward:  0.018  policy: -0.021  value:  0.028  entropy:  2.353  confidence:  0.113  score:  2  vocab: 771
+.......... 92000. reward: -0.092  policy: -1.517  value:  23.391  entropy:  2.358  confidence:  0.110  score:  3  vocab: 772
+.......... 93000. reward: -0.092  policy: -1.538  value:  20.704  entropy:  2.442  confidence:  0.100  score:  3  vocab: 772
+........... 94000. reward: -0.310  policy: -3.578  value:  53.006  entropy:  2.370  confidence:  0.110  score:  3  vocab: 773
+........... 95000. reward: -0.096  policy: -2.132  value:  23.491  entropy:  2.382  confidence:  0.106  score:  3  vocab: 774
+.......... 96000. reward: -0.313  policy: -2.994  value:  47.911  entropy:  2.376  confidence:  0.104  score:  3  vocab: 775
+........... 97000. reward: -0.093  policy: -1.095  value:  18.673  entropy:  2.422  confidence:  0.104  score:  3  vocab: 775
+.......... 98000. reward:  0.016  policy:  0.046  value:  0.021  entropy:  2.442  confidence:  0.099  score:  2  vocab: 775
+.....  	avg. steps:  95.9; avg. normalized score:  0.5 / 1.
+./training_games_sparse...... 99000. reward: -0.213  policy: -2.673  value:  38.954  entropy:  2.443  confidence:  0.106  score:  3  vocab: 777
+..........100000. reward: -0.111  policy: -0.565  value:  10.026  entropy:  2.415  confidence:  0.096  score:  0  vocab: 777
+..........101000. reward:  0.000  policy: -0.042  value:  0.006  entropy:  2.446  confidence:  0.093  score:  0  vocab: 777
+..........102000. reward:  0.001  policy: -0.150  value:  30.596  entropy:  2.445  confidence:  0.092  score:  1  vocab: 777
+..........103000. reward:  0.000  policy: -0.011  value:  0.003  entropy:  2.557  confidence:  0.084  score:  0  vocab: 777
+..........104000. reward:  0.000  policy:  0.024  value:  0.003  entropy:  2.506  confidence:  0.086  score:  0  vocab: 777
+..........105000. reward: -0.111  policy: -0.275  value:  5.525  entropy:  2.421  confidence:  0.093  score:  0  vocab: 777
+..........106000. reward:  0.000  policy: -0.007  value:  0.001  entropy:  2.381  confidence:  0.096  score:  0  vocab: 777
+..........107000. reward:  0.112  policy:  0.344  value:  5.688  entropy:  2.371  confidence:  0.096  score:  1  vocab: 778
+..........108000. reward: -0.111  policy: -0.963  value:  13.627  entropy:  2.401  confidence:  0.094  score:  0  vocab: 778
+..........109000. reward:  0.000  policy:  0.008  value:  0.001  entropy:  2.394  confidence:  0.094  score:  0  vocab: 778
+..........110000. reward: -0.111  policy: -0.630  value:  10.026  entropy:  2.397  confidence:  0.095  score:  0  vocab: 778
+..........111000. reward:  0.000  policy:  0.010  value:  0.001  entropy:  2.366  confidence:  0.097  score:  0  vocab: 778
+.........112000. reward:  0.000  policy:  0.007  value:  0.001  entropy:  2.377  confidence:  0.096  score:  0  vocab: 778
+..........113000. reward:  0.000  policy:  0.004  value:  0.001  entropy:  2.344  confidence:  0.099  score:  0  vocab: 778
+..........114000. reward:  0.000  policy:  0.002  value:  0.000  entropy:  2.337  confidence:  0.098  score:  0  vocab: 778
+..........115000. reward:  0.000  policy:  0.003  value:  0.001  entropy:  2.347  confidence:  0.098  score:  0  vocab: 778
+..........116000. reward: -0.111  policy: -1.231  value:  16.544  entropy:  2.414  confidence:  0.093  score:  0  vocab: 778
+...........117000. reward:  0.001  policy:  1.381  value:  35.420  entropy:  2.357  confidence:  0.098  score:  1  vocab: 780
+..........118000. reward:  0.112  policy:  1.181  value:  17.016  entropy:  2.341  confidence:  0.098  score:  1  vocab: 780
+..........119000. reward:  0.000  policy: -0.019  value:  0.000  entropy:  2.356  confidence:  0.097  score:  0  vocab: 780
+..........120000. reward:  0.112  policy:  0.684  value:  10.282  entropy:  2.356  confidence:  0.098  score:  1  vocab: 780
+..........121000. reward:  0.000  policy:  0.004  value:  0.001  entropy:  2.398  confidence:  0.094  score:  0  vocab: 780
+.........122000. reward:  0.000  policy: -0.000  value:  0.000  entropy:  2.360  confidence:  0.097  score:  0  vocab: 780
+..........123000. reward:  0.000  policy:  0.001  value:  0.000  entropy:  2.399  confidence:  0.093  score:  0  vocab: 780
+..........124000. reward:  0.000  policy:  0.013  value:  0.000  entropy:  2.387  confidence:  0.094  score:  0  vocab: 780
+..........125000. reward:  0.000  policy: -0.006  value:  0.000  entropy:  2.313  confidence:  0.101  score:  0  vocab: 780
+..........126000. reward:  0.000  policy:  0.006  value:  0.000  entropy:  2.352  confidence:  0.097  score:  0  vocab: 780
+..........127000. reward:  0.000  policy:  0.003  value:  0.000  entropy:  2.433  confidence:  0.090  score:  0  vocab: 780
+..........128000. reward:  0.000  policy:  0.003  value:  0.000  entropy:  2.394  confidence:  0.095  score:  0  vocab: 780
+..........129000. reward:  0.000  policy:  0.006  value:  0.000  entropy:  2.450  confidence:  0.089  score:  0  vocab: 780
+..........130000. reward:  0.000  policy:  0.000  value:  0.000  entropy:  2.413  confidence:  0.092  score:  0  vocab: 780
+..........131000. reward:  0.112  policy:  0.674  value:  10.279  entropy:  2.395  confidence:  0.094  score:  1  vocab: 781
+..........132000. reward:  0.000  policy: -0.033  value:  0.001  entropy:  2.413  confidence:  0.092  score:  0  vocab: 781
+.........133000. reward:  0.000  policy: -0.003  value:  0.000  entropy:  2.312  confidence:  0.101  score:  0  vocab: 781
+..........134000. reward:  0.000  policy:  0.003  value:  0.001  entropy:  2.419  confidence:  0.092  score:  0  vocab: 781
+..........135000. reward:  0.000  policy:  0.001  value:  0.000  entropy:  2.346  confidence:  0.098  score:  0  vocab: 781
+..........136000. reward:  0.000  policy:  0.002  value:  0.000  entropy:  2.375  confidence:  0.095  score:  0  vocab: 781
+..........137000. reward:  0.000  policy: -0.001  value:  0.000  entropy:  2.310  confidence:  0.101  score:  0  vocab: 781
+..........138000. reward:  0.000  policy:  0.002  value:  0.000  entropy:  2.357  confidence:  0.097  score:  0  vocab: 781
+..........139000. reward:  0.000  policy: -0.000  value:  0.000  entropy:  2.378  confidence:  0.095  score:  0  vocab: 781
+..........140000. reward:  0.000  policy:  0.001  value:  0.000  entropy:  2.376  confidence:  0.095  score:  0  vocab: 781
+..........141000. reward:  0.000  policy:  0.001  value:  0.000  entropy:  2.390  confidence:  0.095  score:  0  vocab: 781
+..........142000. reward: -0.111  policy: -1.494  value:  20.893  entropy:  2.418  confidence:  0.092  score:  0  vocab: 781
+..........143000. reward:  0.000  policy:  0.008  value:  0.000  entropy:  2.348  confidence:  0.098  score:  0  vocab: 781
+..........144000. reward:  0.000  policy:  0.012  value:  0.001  entropy:  2.340  confidence:  0.099  score:  0  vocab: 781
+.........145000. reward:  0.000  policy:  0.002  value:  0.000  entropy:  2.304  confidence:  0.102  score:  0  vocab: 781
+..........146000. reward:  0.000  policy:  0.001  value:  0.000  entropy:  2.365  confidence:  0.096  score:  0  vocab: 781
+..........147000. reward:  0.000  policy: -0.001  value:  0.000  entropy:  2.352  confidence:  0.097  score:  0  vocab: 781
+..........148000. reward:  0.000  policy:  0.004  value:  0.000  entropy:  2.412  confidence:  0.092  score:  0  vocab: 781
+.......  	avg. steps:  99.4; avg. normalized score:  0.0 / 1.
+Trained in 9396.70 secs
