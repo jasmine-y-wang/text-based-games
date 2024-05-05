@@ -162,29 +162,25 @@ def test_all_checkpoints():
         print()
 
 if __name__ == "__main__":
-    # agent = RandomAgent()
+    agent = RandomAgent()
 
-    # evaluate random agent
-    # play(agent, "./games/tw-rewardsDense_goalDetailed.z8")    # Dense rewards
-    # play(agent, "./games/tw-rewardsBalanced_goalDetailed.z8") # Balanced rewards
-    # play(agent, "./games/tw-rewardsSparse_goalDetailed.z8")   # Sparse rewards  
-    # agent = NeuralAgentLSTM()
-    # train_multiple_games(agent,"neural_agent_lstm_trained_on_multiple_games_2",  num_episodes_per_game=2)
+    play(agent, "./games/tw-rewardsDense_goalDetailed.z8")    # Dense rewards
+    play(agent, "./games/tw-rewardsBalanced_goalDetailed.z8") # Balanced rewards
+    play(agent, "./games/tw-rewardsSparse_goalDetailed.z8")   # Sparse rewards  
 
-    # agent = NeuralAgent(pretrained_embeddings=False)
-    # train_multiple_games(agent,"neural_agent_trained_on_multiple_games_2",  num_episodes_per_game=2)
-    # train_single_game()
+    agent = NeuralAgentLSTM()
+    train_multiple_games(agent,"neural_agent_lstm_trained_on_multiple_games_2",  num_episodes_per_game=2)
 
-    # agent = TransformerNeuralAgent()
-    # train_single_game(agent, "transformer_neural_agent_single", 50)
+    agent = NeuralAgent(pretrained_embeddings=False)
+    train_multiple_games(agent,"neural_agent_trained_on_multiple_games_2",  num_episodes_per_game=2)
 
-    # test_single_agent("neural_agent_trained_on_multiple_games_2")
+    test_single_agent("neural_agent_trained_on_multiple_games_2")
 
-    # test_random()
-    # test_all_checkpoints()
+    test_random()
+    test_all_checkpoints()
 
-    # agent = NeuralAgent()
-    # train_multiple_games(agent, "training_a2c_multiple_5", "all")
-    # test_all_checkpoints()
-    # test_single_agent('a2c_multiple_5_all')
+    agent = NeuralAgent()
+    train_multiple_games(agent, "training_a2c_multiple_5", "all")
+    test_all_checkpoints()
+    test_single_agent('a2c_multiple_5_all')
     test_single_agent()

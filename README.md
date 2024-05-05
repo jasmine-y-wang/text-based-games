@@ -1,6 +1,16 @@
 # text-based-games
 
-## Simple test games
+## Install Dependencies
+The required dependencies can be installed with `pip install -r requirements.txt`.
+
+If additional issues are encountered, it could be helpful to refer to the `README.md` from the TextWorld repository: https://github.com/microsoft/TextWorld
+
+
+## Games
+The TextWorld games that we used are described below (taken from TextWorld documentation). We used detailed instructions for both training and testing and varied the density of rewards (dense, balanced, sparse). 
+
+To setup the games required for training and testing, you can run the `setup.sh` script.
+
 We can use TextWorld to generate a few simple games with the following handcrafted world
 ```
                      Bathroom
@@ -28,3 +38,6 @@ Using `tw-make tw-simple ...`, we are going to generate the following 7 games:
 | `games/rewardsSparse_goalBrief.z8` | sparse rewards + no instructions but the goal is mentionned |
 | | |
 | `games/rewardsSparse_goalNone.z8` | sparse rewards + no instructions/goal<br>_Hint: there's an hidden note in the game that describes the goal!_ |
+
+## Training and Testing
+A variety of training and testing functions are included in `main.py`. Some example code is shown in the file, but different combinations can be used. The primary agents are available in `lstm_dqn_agent.py` and `neural_agent.py`.
